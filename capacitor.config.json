@@ -1,0 +1,8 @@
+{
+  "appId": "ir.dang.app",
+  "appName": "دنگ",
+  "webDir": "www",
+  "backgroundColor": "#667eea",
+  "android": { "allowMixedContent": false },
+  "ios": { "contentInset": "never", "backgroundColor": "#667eea" }
+}

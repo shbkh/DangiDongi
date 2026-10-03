@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="دنگ">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
+    <title>دنگ - تقسیم کننده هزینه</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazirmatn', 'Tahoma', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            padding: 30px 5px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            align-items: flex-end;
+        }
+
+        .form-row-label {
+            flex-shrink: 0;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+            min-width: 60px;
+        }
+
+        .form-row-inputs {
+            display: flex;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .date-input {
+            width: 50px !important;
+            padding: 6px !important;
+            font-size: 12px !important;
+            text-align: center !important;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d5d5d5;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input.error, select.error {
+            border-color: #e74c3c !important;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1) !important;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-nav {
+            padding: 8px 12px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #666;
+            transition: all 0.3s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn-nav:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-new {
+            background: #667eea !important;
+            color: white !important;
+            border-color: #667eea !important;
+        }
+
+        .split-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            justify-content: flex-start;
+        }
+
+        .split-check {
+            flex-shrink: 0;
+            margin: 0;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .split-name {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+            text-align: right;
+        }
+
+        .split-input {
+            width: 70px !important;
+            padding: 6px !important;
+            font-size: 12px !important;
+            margin: 0 !important;
+            text-align: left !important;
+            flex-shrink: 0;
+        }
+
+        .split-validation {
+            margin-top: 10px;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .split-validation.valid {
+            background: #e8f5e9;
+            color: #27ae60;
+        }
+
+        .split-validation.invalid {
+            background: #ffebee;
+            color: #e74c3c;
+        }
+
+        .expense-card {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 10px;
+            background: transparent;
+            min-height: auto;
+        }
+
+        .expense-person {
+            font-weight: 500;
+            color: white;
+            background: #4caf50;
+            padding: 8px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            font-size: 13px;
+            border: none;
+            flex-shrink: 0;
+            width: 80px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .expense-scroll {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+
+        .expense-scroll::-webkit-scrollbar {
+            height: 3px;
+        }
+
+        .expense-scroll::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        .expense-date {
+            white-space: nowrap;
+            flex-shrink: 0;
+            background: #fff9e6;
+            padding: 6px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: #333;
+            width: 78px;
+            text-align: center;
+        }
+
+        .expense-desc {
+            background: #fff9e6;
+            padding: 6px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            flex: 1;
+            min-width: 0;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .expense-amount {
+            font-weight: 600;
+            color: #333;
+            background: #ffeb3b;
+            padding: 6px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+            text-align: center;
+            flex-shrink: 0;
+            width: 80px;
+            font-size: 12px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .expense-delete {
+            font-size: 18px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 50%;
+            transition: background 0.2s;
+            flex-shrink: 0;
+            background: #ffcdd2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+        }
+
+        .expense-delete:hover {
+            background: #ef5350;
+            color: white;
+        }
+
+        .expense-clickable {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .expense-participants-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 6px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .detail-modal-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 380px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .detail-participants {
+            margin-top: 10px;
+        }
+
+        .detail-participant-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 10px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .detail-close-btn {
+            width: 100%;
+            margin-top: 15px;
+            padding: 10px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        /* Custom modal (native confirm() blocked in some WebViews) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 340px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-message {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .modal-btn-cancel {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .modal-btn-confirm {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .total-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .total-summary-item {
+            text-align: center;
+        }
+
+        .total-summary-value {
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .balance-card {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .balance-name {
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+        }
+
+        .balance-spent {
+            font-size: 15px;
+            font-weight: 700;
+            color: #666;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .balance-amount {
+            font-weight: 700;
+            font-size: 17px;
+            min-width: 80px;
+            text-align: left;
+            direction: ltr;
+        }
+
+        .balance-positive {
+            color: #27ae60;
+        }
+
+        .balance-negative {
+            color: #e74c3c;
+        }
+
+        .transaction-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            margin-top: 20px;
+        }
+
+        .expense-form {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .name-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-bottom: 15px;
+        }
+
+        .footer {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .version {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        /* --- Mobile app adjustments (safe areas, no tap flash) --- */
+        html { -webkit-text-size-adjust: 100%; }
+        body {
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            padding-left: max(20px, env(safe-area-inset-left));
+            padding-right: max(20px, env(safe-area-inset-right));
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app"></div>
+
+    <script>
+        class ExpenseSplitter {
+            constructor() {
+                this.loadFromStorage();
+                this.render();
+            }
+
+            persianToEnglish(str) {
+                if (!str && str !== 0) return str;
+                const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+                const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+                let result = str.toString();
+                for (let i = 0; i < 10; i++) {
+                    result = result.replace(new RegExp(persianDigits[i], 'g'), englishDigits[i]);
+                }
+                return result;
+            }
+
+            updateSplitValidation() {
+                if (!this.currentExpense.useCustomSplit) return;
+                let total = 0;
+                this.currentExpense.participants.forEach(idx => {
+                    const val = parseFloat(this.persianToEnglish(this.currentExpense.splits[idx] || 0)) || 0;
+                    total += val;
+                });
+                const targetAmount = parseFloat(this.persianToEnglish(this.currentExpense.amount || 0)) || 0;
+                const isValid = Math.abs(total - targetAmount) < 0.01;
+
+                document.querySelectorAll('.split-input').forEach(el => {
+                    if (isValid) {
+                        el.classList.remove('error');
+                    } else {
+                        el.classList.add('error');
+                    }
+                });
+            }
+
+            showExpenseDetail(idx) {
+                const exp = this.expenses[idx];
+                const dateStr = `${exp.year}/${String(exp.month).padStart(2, '0')}/${String(exp.day).padStart(2, '0')}`;
+                const amount = parseFloat(this.persianToEnglish(exp.amount)) || 0;
+
+                let participantsRows = '';
+                if (exp.useCustomSplit) {
+                    participantsRows = exp.participants.map(pIdx => {
+                        const share = parseFloat(this.persianToEnglish(exp.splits[pIdx] || 0)) || 0;
+                        return `<div class="detail-participant-row"><span>${this.people[pIdx]}</span><span>${share.toLocaleString('en-US')}</span></div>`;
+                    }).join('');
+                } else {
+                    const equalShare = amount / exp.participants.length;
+                    participantsRows = exp.participants.map(pIdx => {
+                        return `<div class="detail-participant-row"><span>${this.people[pIdx]}</span><span>${(Math.round(equalShare * 100) / 100).toLocaleString('en-US')}</span></div>`;
+                    }).join('');
+                }
+
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                overlay.innerHTML = `
+                    <div class="detail-modal-box">
+                        <div class="detail-title">${exp.description}</div>
+                        <div class="detail-row"><span>خرج‌کننده</span><span>${this.people[exp.payer]}</span></div>
+                        <div class="detail-row"><span>تاریخ</span><span>${dateStr}</span></div>
+                        <div class="detail-row"><span>مبلغ کل</span><span>${amount.toLocaleString('en-US')}</span></div>
+                        <div class="detail-row"><span>نوع تقسیم</span><span>${exp.useCustomSplit ? 'سفارشی' : 'مساوی'}</span></div>
+                        <div class="detail-participants">
+                            <div style="font-size: 13px; font-weight: 600; color: #666; margin-bottom: 8px;">شریک‌ها (${exp.participants.length} نفر)</div>
+                            ${participantsRows}
+                        </div>
+                        <button class="detail-close-btn" id="detailCloseBtn">بستن</button>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+
+                const close = () => document.body.removeChild(overlay);
+                overlay.querySelector('#detailCloseBtn').addEventListener('click', close);
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) close();
+                });
+            }
+
+            showAlert(message) {
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                overlay.innerHTML = `
+                    <div class="modal-box">
+                        <div class="modal-message">${message}</div>
+                        <div class="modal-buttons">
+                            <button class="modal-btn modal-btn-confirm" id="alertOk" style="background: #667eea;">باشه</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+                const close = () => document.body.removeChild(overlay);
+                overlay.querySelector('#alertOk').addEventListener('click', close);
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) close();
+                });
+            }
+
+            removePersonAndReindex(idx) {
+                this.people.splice(idx, 1);
+                const reindex = (i) => (i > idx ? i - 1 : i);
+
+                this.expenses.forEach(exp => {
+                    exp.payer = reindex(exp.payer);
+                    exp.participants = exp.participants.map(reindex);
+                    if (exp.useCustomSplit && exp.splits) {
+                        const newSplits = {};
+                        Object.keys(exp.splits).forEach(k => {
+                            newSplits[reindex(parseInt(k))] = exp.splits[k];
+                        });
+                        exp.splits = newSplits;
+                    }
+                });
+
+                if (this.currentExpense.payer !== '' && this.currentExpense.payer !== null && this.currentExpense.payer !== undefined) {
+                    this.currentExpense.payer = String(reindex(parseInt(this.currentExpense.payer)));
+                }
+                this.currentExpense.participants = this.currentExpense.participants.map(reindex);
+                if (this.currentExpense.splits) {
+                    const newSplits = {};
+                    Object.keys(this.currentExpense.splits).forEach(k => {
+                        newSplits[reindex(parseInt(k))] = this.currentExpense.splits[k];
+                    });
+                    this.currentExpense.splits = newSplits;
+                }
+            }
+
+            showConfirm(message, onConfirm) {
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                overlay.innerHTML = `
+                    <div class="modal-box">
+                        <div class="modal-message">${message}</div>
+                        <div class="modal-buttons">
+                            <button class="modal-btn modal-btn-cancel" id="modalCancel">انصراف</button>
+                            <button class="modal-btn modal-btn-confirm" id="modalConfirm">تایید</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+
+                const close = () => document.body.removeChild(overlay);
+
+                overlay.querySelector('#modalCancel').addEventListener('click', close);
+                overlay.querySelector('#modalConfirm').addEventListener('click', () => {
+                    close();
+                    onConfirm();
+                });
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) close();
+                });
+            }
+
+            getTodayJalali() {
+                const now = new Date();
+                const gy = now.getFullYear();
+                const gm = now.getMonth() + 1;
+                const gd = now.getDate();
+                return this.gregorianToJalali(gy, gm, gd);
+            }
+
+            gregorianToJalali(gy, gm, gd) {
+                const g_days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                const j_days_in_month = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29];
+
+                const isGLeap = (y) => (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
+
+                let gy2 = gy - 1600;
+                let gm2 = gm - 1;
+                let gd2 = gd - 1;
+
+                let g_day_no = 365 * gy2 + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100) + Math.floor((gy2 + 399) / 400);
+                for (let i = 0; i < gm2; ++i) g_day_no += g_days_in_month[i];
+                if (gm2 > 1 && isGLeap(gy)) g_day_no++;
+                g_day_no += gd2;
+
+                let j_day_no = g_day_no - 79;
+
+                const j_np = Math.floor(j_day_no / 12053);
+                j_day_no %= 12053;
+
+                let jy = 979 + 33 * j_np + 4 * Math.floor(j_day_no / 1461);
+                j_day_no %= 1461;
+
+                if (j_day_no >= 366) {
+                    jy += Math.floor((j_day_no - 1) / 365);
+                    j_day_no = (j_day_no - 1) % 365;
+                }
+
+                let jm = 0;
+                for (; jm < 11 && j_day_no >= j_days_in_month[jm]; ++jm) {
+                    j_day_no -= j_days_in_month[jm];
+                }
+                const jd = j_day_no + 1;
+
+                return { year: jy, month: jm + 1, day: jd };
+            }
+
+            saveToStorage() {
+                const data = {
+                    step: this.step,
+                    numPeople: this.numPeople,
+                    names: this.names,
+                    people: this.people,
+                    expenses: this.expenses,
+                    currentExpense: this.currentExpense,
+                    editingNames: this.editingNames,
+                    dangName: this.dangName
+                };
+                localStorage.setItem('dang_data', JSON.stringify(data));
+            }
+
+            loadFromStorage() {
+                const saved = localStorage.getItem('dang_data');
+                const today = this.getTodayJalali();
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    this.step = data.step || 'setup';
+                    this.numPeople = data.numPeople || '';
+                    this.names = data.names || [];
+                    this.people = data.people || [];
+                    this.expenses = data.expenses || [];
+                    this.editingNames = data.editingNames || false;
+                    this.dangName = data.dangName || '';
+                    this.currentExpense = data.currentExpense || {
+                        year: today.year,
+                        month: today.month,
+                        day: today.day,
+                        description: '',
+                        amount: '',
+                        payer: '',
+                        participants: [],
+                        useCustomSplit: false,
+                        splits: {}
+                    };
+
+                    // اگر فرم دست‌نخورده است (شرح/مبلغ/خرج‌کننده خالی)، تاریخ را با امروز به‌روز کن
+                    // تا تاریخ کهنه از یک سشن قبلی روی فرم باقی نماند
+                    if (!this.currentExpense.description && !this.currentExpense.amount && !this.currentExpense.payer) {
+                        this.currentExpense.year = today.year;
+                        this.currentExpense.month = today.month;
+                        this.currentExpense.day = today.day;
+                    }
+                } else {
+                    this.step = 'setup';
+                    this.numPeople = '';
+                    this.names = [];
+                    this.people = [];
+                    this.expenses = [];
+                    this.dangName = '';
+                    this.currentExpense = {
+                        year: today.year,
+                        month: today.month,
+                        day: today.day,
+                        description: '',
+                        amount: '',
+                        payer: '',
+                        participants: [],
+                        useCustomSplit: false,
+                        splits: {}
+                    };
+                }
+            }
+
+            resetAll() {
+                localStorage.removeItem('dang_data');
+                const today = this.getTodayJalali();
+                this.step = 'setup';
+                this.numPeople = '';
+                this.names = [];
+                this.people = [];
+                this.expenses = [];
+                this.dangName = '';
+                this.currentExpense = {
+                    year: today.year,
+                    month: today.month,
+                    day: today.day,
+                    description: '',
+                    amount: '',
+                    payer: '',
+                    participants: [],
+                    useCustomSplit: false,
+                    splits: {}
+                };
+                this.render();
+            }
+
+            render() {
+                const app = document.getElementById('app');
+                app.innerHTML = '';
+
+                if (this.step === 'setup') {
+                    this.renderSetup(app);
+                } else if (this.step === 'names') {
+                    this.renderNames(app);
+                } else if (this.step === 'expenses') {
+                    this.renderExpenses(app);
+                } else if (this.step === 'results') {
+                    this.renderResults(app);
+                }
+            }
+
+            renderSetup(app) {
+                const html = `
+                    <div class="header">
+                        <h1>💰 تقسیم هزینه</h1>
+                    </div>
+                    <div class="form-group">
+                        <label>نام دنگ (اختیاری)</label>
+                        <input type="text" id="dangName" value="${this.dangName || ''}" placeholder="مثلا: سفر کیش">
+                    </div>
+                    <div class="form-group">
+                        <label>تعداد افراد</label>
+                        <input type="text" id="numPeople" inputmode="numeric" dir="ltr" placeholder="مثلا 4">
+                    </div>
+                    <button class="btn-primary" id="btnContinue">ادامه</button>
+                    <div class="footer">
+                        <div class="version">دنگ v1.19.6</div>
+                        <div>Designed by: Arash Elyassi</div>
+                    </div>
+                `;
+                app.innerHTML = html;
+
+                document.getElementById('dangName').addEventListener('input', (e) => {
+                    this.dangName = e.target.value;
+                    this.saveToStorage();
+                });
+
+                document.getElementById('btnContinue').addEventListener('click', () => {
+                    const input = this.persianToEnglish(document.getElementById('numPeople').value);
+                    this.numPeople = parseInt(input);
+                    if (this.numPeople > 0 && this.numPeople <= 20) {
+                        this.names = Array(this.numPeople).fill('');
+                        this.step = 'names';
+                        this.saveToStorage();
+                        this.render();
+                    } else {
+                        this.showAlert('لطفا تعداد درستی وارد کنید (2-20)');
+                    }
+                });
+            }
+
+            renderNames(app) {
+                const isEditing = !!this.editingNames;
+                const list = isEditing ? this.people : this.names;
+
+                let namesHtml = list.map((name, idx) => `
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <input type="text" class="nameInput" data-index="${idx}" value="${name}" placeholder="نام کامل" style="flex: 1;">
+                        <div class="expense-delete btnRemoveName" data-index="${idx}">🗑</div>
+                    </div>
+                `).join('');
+
+                const html = `
+                    <div class="header">
+                        <h1>👥 نام افراد</h1>
+                    </div>
+                    <div class="name-inputs">
+                        ${namesHtml}
+                    </div>
+                    <button class="btn-nav" id="btnAddName" style="width: 100%; margin-bottom: 15px;">➕ افزودن فرد</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn-primary" id="btnStart" style="flex: 1;">${isEditing ? 'ذخیره' : 'شروع'}</button>
+                        ${isEditing ? '<button class="btn-nav" id="btnCancelEdit" style="flex: 1;">انصراف</button>' : ''}
+                    </div>
+                    <div class="footer">
+                        <div class="version">دنگ v1.19.6</div>
+                        <div>Designed by: Arash Elyassi</div>
+                    </div>
+                `;
+                app.innerHTML = html;
+
+                document.querySelectorAll('.nameInput').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const idx = parseInt(e.target.dataset.index);
+                        list[idx] = e.target.value;
+                        this.saveToStorage();
+                    });
+                });
+
+                document.getElementById('btnAddName').addEventListener('click', () => {
+                    list.push('');
+                    this.saveToStorage();
+                    this.render();
+                });
+
+                document.querySelectorAll('.btnRemoveName').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const idx = parseInt(e.currentTarget.dataset.index);
+                        if (list.length <= 2) {
+                            this.showAlert('حداقل باید ۲ نفر باشند');
+                            return;
+                        }
+                        if (isEditing) {
+                            const personName = this.people[idx];
+                            const isUsed = this.expenses.some(exp => exp.payer === idx || exp.participants.includes(idx));
+                            if (isUsed) {
+                                this.showAlert(`${personName} در هزینه‌های ثبت شده استفاده شده و قابل حذف نیست`);
+                                return;
+                            }
+                        }
+                        this.showConfirm('این فرد حذف شود؟', () => {
+                            if (isEditing) {
+                                this.removePersonAndReindex(idx);
+                            } else {
+                                this.names.splice(idx, 1);
+                            }
+                            this.saveToStorage();
+                            this.render();
+                        });
+                    });
+                });
+
+                document.getElementById('btnStart').addEventListener('click', () => {
+                    if (!list.every(name => name.trim())) {
+                        this.showAlert('لطفا تمام نام‌ها را وارد کنید');
+                        return;
+                    }
+
+                    if (isEditing) {
+                        this.editingNames = false;
+                        this.editSnapshot = null;
+                        this.step = 'expenses';
+                        this.saveToStorage();
+                        this.render();
+                        return;
+                    }
+
+                    this.people = [...this.names];
+                    this.expenses = [];
+                    const today = this.getTodayJalali();
+                    this.currentExpense = {
+                        year: today.year,
+                        month: today.month,
+                        day: today.day,
+                        description: '',
+                        amount: '',
+                        payer: '',
+                        participants: [],
+                        useCustomSplit: false,
+                        splits: {}
+                    };
+                    this.step = 'expenses';
+                    this.saveToStorage();
+                    this.render();
+                });
+
+                if (isEditing) {
+                    document.getElementById('btnCancelEdit').addEventListener('click', () => {
+                        this.showConfirm('تغییرات ذخیره نشده لغو شود؟', () => {
+                            if (this.editSnapshot) {
+                                this.people = this.editSnapshot.people;
+                                this.expenses = this.editSnapshot.expenses;
+                                this.currentExpense = this.editSnapshot.currentExpense;
+                            }
+                            this.editingNames = false;
+                            this.editSnapshot = null;
+                            this.step = 'expenses';
+                            this.saveToStorage();
+                            this.render();
+                        });
+                    });
+                }
+            }
+
+            renderExpenses(app) {
+                let expensesHtml = this.expenses.map((exp, idx) => `
+                    <div class="expense-card expense-clickable" data-index="${idx}">
+                        <div class="expense-person">${this.people[exp.payer]}</div>
+                        <div class="expense-desc">${exp.description}</div>
+                        <div class="expense-participants-badge">👥 ${exp.participants.length}</div>
+                        <div class="expense-amount">${parseFloat(exp.amount).toLocaleString('en-US')}</div>
+                        <div class="expense-delete" data-index="${idx}">🗑</div>
+                    </div>
+                `).join('');
+
+                let participantsHtml = this.people.map((p, idx) => {
+                    const isSelected = this.currentExpense.participants.includes(idx);
+                    return `
+                        <div class="split-row">
+                            <input type="checkbox" class="split-check participant" data-index="${idx}" ${isSelected ? 'checked' : ''}>
+                            <div class="split-name">${p}</div>
+                            ${this.currentExpense.useCustomSplit && isSelected ? `
+                                <input type="text" class="split-input" data-index="${idx}" inputmode="decimal" dir="ltr" placeholder="دنگ" value="${this.currentExpense.splits[idx] || ''}">
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+
+                const html = `
+                    <div class="header" style="flex-wrap: nowrap;">
+                        <h1>📝 ثبت هزینه</h1>
+                        <div style="display: flex; gap: 6px; margin-inline-start: auto; flex-shrink: 0;">
+                            <button class="btn-nav" id="btnPeopleList" style="white-space: nowrap; width: 110px; text-align: center;">👥 افراد</button>
+                            <button class="btn-nav" id="btnResults" style="white-space: nowrap; width: 110px; text-align: center;">حساب و کتاب</button>
+                        </div>
+                    </div>
+                    
+                    <div class="expense-form">
+                        <div class="form-row">
+                            <div class="form-row-label">تاریخ</div>
+                            <div class="form-row-inputs" style="align-items: flex-end;">
+                                <input type="text" class="date-input" id="expDay" inputmode="numeric" dir="ltr" placeholder="روز" maxlength="2" value="${String(this.currentExpense.day).padStart(2, '0')}">
+                                <div style="font-size: 14px; color: #999; padding-bottom: 8px;">/</div>
+                                <input type="text" class="date-input" id="expMonth" inputmode="numeric" dir="ltr" placeholder="ماه" maxlength="2" value="${String(this.currentExpense.month).padStart(2, '0')}">
+                                <div style="font-size: 14px; color: #999; padding-bottom: 8px;">/</div>
+                                <input type="text" class="date-input" id="expYear" inputmode="numeric" dir="ltr" placeholder="سال" maxlength="4" value="${this.currentExpense.year}">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-row-label">شرح</div>
+                            <div style="flex: 1;">
+                                <input type="text" id="expDescription" value="${this.currentExpense.description}" placeholder="مثلا: شام">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-row-label">مبلغ</div>
+                            <div style="flex: 1;">
+                                <input type="text" id="expAmount" inputmode="decimal" dir="ltr" value="${this.currentExpense.amount}" placeholder="150000">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-row-label">خرج‌کننده</div>
+                            <div style="flex: 1;">
+                                <select id="expPayer">
+                                    <option value="">--</option>
+                                    ${this.people.map((p, idx) => `<option value="${idx}" ${this.currentExpense.payer == idx ? 'selected' : ''}>${p}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="customSplitCheck" ${this.currentExpense.useCustomSplit ? 'checked' : ''} style="width: auto; margin-left: 8px;">
+                                دنگ سفارشی برای هرکس
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>شریک‌ها</label>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                ${participantsHtml}
+                            </div>
+                        </div>
+
+                        <button class="btn-primary" id="btnAddExpense" style="margin-top: 15px;">اضافه کردن هزینه</button>
+                    </div>
+
+                    ${this.expenses.length > 0 ? `
+                        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>هزینه‌های ثبت شده</span>
+                            <span style="font-size: 16px; font-weight: 700; color: #667eea;">جمع: ${this.expenses.reduce((sum, exp) => sum + (parseFloat(this.persianToEnglish(exp.amount)) || 0), 0).toLocaleString('en-US')}</span>
+                        </div>
+                        <div>${expensesHtml}</div>
+                    ` : ''}
+
+                    <div class="footer">
+                        <div class="version">دنگ v1.19.6</div>
+                        <div>Designed by: Arash Elyassi</div>
+                    </div>
+                `;
+
+                app.innerHTML = html;
+
+                document.getElementById('expDay').addEventListener('input', (e) => {
+                    this.currentExpense.day = parseInt(this.persianToEnglish(e.target.value)) || 0;
+                    this.saveToStorage();
+                });
+
+                document.getElementById('expMonth').addEventListener('input', (e) => {
+                    this.currentExpense.month = parseInt(this.persianToEnglish(e.target.value)) || 0;
+                    this.saveToStorage();
+                });
+
+                document.getElementById('expYear').addEventListener('input', (e) => {
+                    this.currentExpense.year = parseInt(this.persianToEnglish(e.target.value)) || 0;
+                    this.saveToStorage();
+                });
+
+                document.getElementById('expDescription').addEventListener('input', (e) => {
+                    this.currentExpense.description = e.target.value;
+                    this.saveToStorage();
+                });
+
+                document.getElementById('expAmount').addEventListener('input', (e) => {
+                    this.currentExpense.amount = this.persianToEnglish(e.target.value);
+                    this.saveToStorage();
+                    this.updateSplitValidation();
+                });
+
+                document.getElementById('expPayer').addEventListener('change', (e) => {
+                    this.currentExpense.payer = e.target.value;
+                    this.saveToStorage();
+                });
+                
+                // تنظیم مستقیم value
+                setTimeout(() => {
+                    document.getElementById('expPayer').value = this.currentExpense.payer || '';
+                }, 0);
+
+                document.getElementById('customSplitCheck').addEventListener('change', (e) => {
+                    this.currentExpense.useCustomSplit = e.target.checked;
+                    if (!e.target.checked) {
+                        this.currentExpense.splits = {};
+                    }
+                    this.saveToStorage();
+                    this.render();
+                });
+
+                document.querySelectorAll('.participant').forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        const idx = parseInt(e.target.dataset.index);
+                        if (e.target.checked) {
+                            if (!this.currentExpense.participants.includes(idx)) {
+                                this.currentExpense.participants.push(idx);
+                                if (this.currentExpense.useCustomSplit) {
+                                    this.currentExpense.splits[idx] = '';
+                                }
+                            }
+                        } else {
+                            this.currentExpense.participants = this.currentExpense.participants.filter(i => i !== idx);
+                            delete this.currentExpense.splits[idx];
+                        }
+                        this.saveToStorage();
+                        this.render();
+                    });
+                });
+
+                document.querySelectorAll('.split-input').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const idx = parseInt(e.target.dataset.index);
+                        this.currentExpense.splits[idx] = this.persianToEnglish(e.target.value);
+                        this.saveToStorage();
+                        this.updateSplitValidation();
+                    });
+                });
+
+                this.updateSplitValidation();
+
+                document.getElementById('btnAddExpense').addEventListener('click', () => {
+                    document.querySelectorAll('input.error, select.error').forEach(el => el.classList.remove('error'));
+                    
+                    let hasError = false;
+                    let errorMsg = [];
+                    
+                    if (!this.currentExpense.description) {
+                        document.getElementById('expDescription').classList.add('error');
+                        hasError = true;
+                        errorMsg.push('شرح');
+                    }
+                    if (!this.currentExpense.amount) {
+                        document.getElementById('expAmount').classList.add('error');
+                        hasError = true;
+                        errorMsg.push('مبلغ');
+                    }
+                    if (!this.currentExpense.payer) {
+                        document.getElementById('expPayer').classList.add('error');
+                        hasError = true;
+                        errorMsg.push('خرج‌کننده');
+                    }
+                    if (this.currentExpense.participants.length === 0) {
+                        hasError = true;
+                        errorMsg.push('شریک‌ها');
+                    }
+                    
+                    if (hasError) {
+                        this.showAlert('لطفا پر کنید: ' + errorMsg.join(', '));
+                        return;
+                    }
+
+                    if (this.currentExpense.useCustomSplit) {
+                        let total = 0;
+                        this.currentExpense.participants.forEach(idx => {
+                            const val = parseFloat(this.persianToEnglish(this.currentExpense.splits[idx] || 0)) || 0;
+                            total += val;
+                        });
+                        const targetAmount = parseFloat(this.persianToEnglish(this.currentExpense.amount));
+                        if (Math.abs(total - targetAmount) > 0.01) {
+                            this.showAlert(`جمع دنگ‌ها (${total}) با مبلغ کل (${targetAmount}) برابر نیست!`);
+                            return;
+                        }
+                    }
+
+                    this.expenses.push({
+                        ...this.currentExpense,
+                        amount: parseFloat(this.persianToEnglish(this.currentExpense.amount)),
+                        payer: parseInt(this.currentExpense.payer)
+                    });
+                    const today = this.getTodayJalali();
+                    this.currentExpense = {
+                        year: today.year,
+                        month: today.month,
+                        day: today.day,
+                        description: '',
+                        amount: '',
+                        payer: '',
+                        participants: [],
+                        useCustomSplit: false,
+                        splits: {}
+                    };
+                    this.saveToStorage();
+                    this.render();
+                });
+
+                document.querySelectorAll('.expense-delete').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const idx = parseInt(e.target.dataset.index);
+                        this.showConfirm('این هزینه حذف شود؟', () => {
+                            this.expenses.splice(idx, 1);
+                            this.saveToStorage();
+                            this.render();
+                        });
+                    });
+                });
+
+                document.querySelectorAll('.expense-clickable').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const idx = parseInt(card.dataset.index);
+                        this.showExpenseDetail(idx);
+                    });
+                });
+
+                document.getElementById('btnPeopleList').addEventListener('click', () => {
+                    this.editingNames = true;
+                    this.names = [...this.people];
+                    this.editSnapshot = JSON.parse(JSON.stringify({
+                        people: this.people,
+                        expenses: this.expenses,
+                        currentExpense: this.currentExpense
+                    }));
+                    this.step = 'names';
+                    this.render();
+                });
+
+                document.getElementById('btnResults').addEventListener('click', () => {
+                    this.step = 'results';
+                    this.saveToStorage();
+                    this.render();
+                });
+            }
+
+            exportToCSV() {
+                try {
+                    const csvEscape = (val) => {
+                        const s = String(val ?? '');
+                        if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+                            return '"' + s.replace(/"/g, '""') + '"';
+                        }
+                        return s;
+                    };
+                    const row = (arr) => arr.map(csvEscape).join(',') + '\r\n';
+
+                    const balances = this.calculateBalances();
+                    const grossSpent = this.calculateGrossSpent();
+                    const transactions = this.getTransactions();
+
+                    let csv = '\uFEFF'; // BOM so Excel opens UTF-8/Persian correctly
+
+                    const title = this.dangName ? `حساب و کتاب دنگ "${this.dangName}"` : 'حساب و کتاب دنگ';
+                    csv += row([title]);
+                    csv += row([]);
+
+                    csv += row(['هزینه‌ها']);
+                    csv += row(['تاریخ', 'خرج‌کننده', 'شرح', 'مبلغ', 'شریک‌ها']);
+                    this.expenses.forEach(exp => {
+                        const dateStr = `${exp.year}/${String(exp.month).padStart(2, '0')}/${String(exp.day).padStart(2, '0')}`;
+                        const participantNames = exp.participants.map(idx => this.people[idx]).join('، ');
+                        const amount = parseFloat(this.persianToEnglish(exp.amount)) || 0;
+                        csv += row([dateStr, this.people[exp.payer], exp.description, amount, participantNames]);
+                    });
+                    csv += row([]);
+
+                    csv += row(['تراز']);
+                    csv += row(['نام', 'جمع خرج', 'تراز']);
+                    this.people.forEach((p, idx) => {
+                        csv += row([p, Math.round(grossSpent[idx] * 100) / 100, Math.round(balances[idx] * 100) / 100]);
+                    });
+                    csv += row([]);
+
+                    csv += row(['تسویه حساب']);
+                    csv += row(['از', 'به', 'مبلغ']);
+                    transactions.forEach(tx => {
+                        csv += row([tx.from, tx.to, Math.round(tx.amount * 100) / 100]);
+                    });
+
+                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    const blobUrl = URL.createObjectURL(blob);
+                    this.showCsvDownload(blobUrl, csv);
+                } catch (err) {
+                    this.showAlert('خطا در ساخت فایل: ' + (err && err.message ? err.message : 'نامشخص'));
+                }
+            }
+
+            isNativeApp() {
+                const c = window.Capacitor;
+                return !!(c && c.isNativePlatform && c.isNativePlatform());
+            }
+
+            async shareCsv(csv) {
+                const fileName = 'dang-export.csv';
+                const c = window.Capacitor;
+                try {
+                    if (this.isNativeApp() && c.Plugins && c.Plugins.Filesystem && c.Plugins.Share) {
+                        const r = await c.Plugins.Filesystem.writeFile({
+                            path: fileName, data: '\uFEFF' + csv, directory: 'CACHE', encoding: 'utf8'
+                        });
+                        await c.Plugins.Share.share({ title: 'دنگ', files: [r.uri], dialogTitle: 'ذخیره یا ارسال فایل' });
+                        return;
+                    }
+                    const file = new File(['\uFEFF' + csv], fileName, { type: 'text/csv' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({ files: [file], title: 'دنگ' });
+                        return;
+                    }
+                    this.showAlert('اشتراک‌گذاری فایل در این دستگاه پشتیبانی نمی‌شود.');
+                } catch (err) {
+                    if (!err || (err.name !== 'AbortError' && !/cancel/i.test(String(err.message || err)))) {
+                        this.showAlert('خطا در اشتراک‌گذاری: ' + (err && err.message ? err.message : 'نامشخص'));
+                    }
+                }
+            }
+
+            showCsvDownload(blobUrl, csv) {
+                const native = this.isNativeApp();
+                const canShare = native || !!(navigator.canShare && typeof File !== 'undefined' &&
+                    (() => { try { return navigator.canShare({ files: [new File(['x'], 'a.csv', { type: 'text/csv' })] }); } catch (e) { return false; } })());
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                overlay.innerHTML = `
+                    <div class="modal-box">
+                        <div class="modal-message">فایل خروجی آماده است<br>${native ? '' : '<span style="font-size: 12px; color: #999;">اگر دانلود شروع نشد، لینک را باز نگه دارید و «ذخیره لینک» را بزنید</span>'}</div>
+                        ${canShare ? '<button class="modal-btn modal-btn-confirm" id="csvShareBtn" style="width: 100%; margin-bottom: 10px; padding: 12px; background: #667eea; color: white; border: none; border-radius: 6px; font-family: inherit; font-size: 15px; font-weight: 600;">📤 ذخیره / ارسال فایل CSV</button>' : ''}
+                        <a href="${blobUrl}" download="dang-export.csv" id="csvDownloadLink" style="display: ${native ? 'none' : 'block'}; padding: 12px; background: #667eea; color: white; border-radius: 6px; text-decoration: none; margin-bottom: 10px; font-weight: 600;">📑 دانلود فایل CSV</a>
+                        <button class="modal-btn modal-btn-cancel" id="csvCloseBtn" style="width: 100%;">بستن</button>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+                const close = () => {
+                    document.body.removeChild(overlay);
+                };
+                overlay.querySelector('#csvCloseBtn').addEventListener('click', close);
+                const shareBtn = overlay.querySelector('#csvShareBtn');
+                if (shareBtn) shareBtn.addEventListener('click', () => this.shareCsv(csv));
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) close();
+                });
+            }
+
+
+            calculateGrossSpent() {
+                const spent = this.people.map(() => 0);
+                this.expenses.forEach(exp => {
+                    const amount = parseFloat(this.persianToEnglish(exp.amount)) || 0;
+                    if (exp.useCustomSplit) {
+                        exp.participants.forEach(idx => {
+                            spent[idx] += parseFloat(this.persianToEnglish(exp.splits[idx] || 0)) || 0;
+                        });
+                    } else {
+                        const splitAmount = amount / exp.participants.length;
+                        exp.participants.forEach(idx => {
+                            spent[idx] += splitAmount;
+                        });
+                    }
+                });
+                return spent;
+            }
+
+            calculateBalances() {
+                const balances = this.people.map(() => 0);
+                this.expenses.forEach(exp => {
+                    const amount = parseFloat(this.persianToEnglish(exp.amount)) || 0;
+                    balances[exp.payer] += amount;
+
+                    if (exp.useCustomSplit) {
+                        exp.participants.forEach(idx => {
+                            balances[idx] -= parseFloat(this.persianToEnglish(exp.splits[idx] || 0)) || 0;
+                        });
+                    } else {
+                        const splitAmount = amount / exp.participants.length;
+                        exp.participants.forEach(idx => {
+                            balances[idx] -= splitAmount;
+                        });
+                    }
+                });
+                return balances;
+            }
+
+            getTransactions() {
+                const balances = this.calculateBalances();
+                const txs = [];
+                const tempBalances = [...balances];
+
+                for (let i = 0; i < tempBalances.length; i++) {
+                    if (tempBalances[i] > 0.01) {
+                        for (let j = 0; j < tempBalances.length; j++) {
+                            if (tempBalances[j] < -0.01) {
+                                const amount = Math.min(tempBalances[i], -tempBalances[j]);
+                                txs.push({
+                                    from: this.people[j],
+                                    to: this.people[i],
+                                    amount: Math.round(amount * 100) / 100
+                                });
+                                tempBalances[i] -= amount;
+                                tempBalances[j] += amount;
+                            }
+                        }
+                    }
+                }
+                return txs.filter(tx => tx.amount > 0.01);
+            }
+
+            renderResults(app) {
+                const balances = this.calculateBalances();
+                const grossSpent = this.calculateGrossSpent();
+                const transactions = this.getTransactions();
+                const totalAmount = this.expenses.reduce((sum, exp) => sum + (parseFloat(this.persianToEnglish(exp.amount)) || 0), 0);
+
+                let balancesHtml = this.people.map((p, idx) => {
+                    const balance = balances[idx];
+                    const amountClass = balance > 0.01 ? 'balance-positive' : balance < -0.01 ? 'balance-negative' : '';
+                    
+                    return `
+                        <div class="balance-card">
+                            <div class="balance-name">${p}</div>
+                            <div class="balance-spent">${(Math.round(grossSpent[idx] * 100) / 100).toLocaleString('en-US')}</div>
+                            <div class="balance-amount ${amountClass}">
+                                ${balance < 0 ? '−' : '+'}${Math.abs(Math.round(balance * 100) / 100).toLocaleString('en-US')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                let txsHtml = transactions.map(tx => `
+                    <div class="transaction-card">
+                        ${tx.from} باید ${Math.round(tx.amount * 100) / 100} به ${tx.to} بپردازد
+                    </div>
+                `).join('');
+
+                const html = `
+                    <div class="header" style="flex-direction: column; align-items: stretch; flex-wrap: nowrap;">
+                        <h1>📊 حساب و کتاب${this.dangName ? ` دنگ "${this.dangName}"` : ''}</h1>
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <button class="btn-nav" id="btnBack" style="width: 86px; text-align: center;">ثبت هزینه</button>
+                            <div style="display: flex; gap: 6px;">
+                                <button class="btn-nav" id="btnExport" style="width: 86px; text-align: center;">📑 CSV</button>
+                                <button class="btn-nav btn-new" id="btnNew" style="width: 86px; text-align: center;">دنگ جدید</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="total-summary">
+                        <div class="total-summary-item">
+                            <div>جمع کل هزینه‌ها</div>
+                            <div class="total-summary-value">${totalAmount.toLocaleString('en-US')}</div>
+                        </div>
+                        <div class="total-summary-item">
+                            <div>تعداد تراکنش‌ها</div>
+                            <div class="total-summary-value">${this.expenses.length.toLocaleString('en-US')}</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; padding: 0 12px; margin-bottom: 6px; font-size: 13px; color: #999;">
+                        <div style="flex: 1;">نام</div>
+                        <div style="min-width: 80px; text-align: center;">جمع خرج</div>
+                        <div style="min-width: 80px; text-align: left;">تراز</div>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        ${balancesHtml}
+                    </div>
+
+                    ${transactions.length > 0 ? `
+                        <div class="section-title">تسویه حساب</div>
+                        ${txsHtml}
+                    ` : ''}
+
+                    <div class="footer">
+                        <div class="version">دنگ v1.19.6</div>
+                        <div>Designed by: Arash Elyassi</div>
+                    </div>
+                `;
+
+                app.innerHTML = html;
+
+                document.getElementById('btnExport').addEventListener('click', () => {
+                    this.exportToCSV();
+                });
+
+                document.getElementById('btnBack').addEventListener('click', () => {
+                    this.step = 'expenses';
+                    this.saveToStorage();
+                    this.render();
+                });
+
+                document.getElementById('btnNew').addEventListener('click', () => {
+                    this.showConfirm('تمام داده‌ها حذف شود و دنگ جدید شروع شود؟', () => {
+                        this.resetAll();
+                    });
+                });
+            }
+        }
+
+        new ExpenseSplitter();
+
+        // PWA: offline support (not needed inside the native Capacitor app)
+        if ('serviceWorker' in navigator && !window.Capacitor && /^https?:$/.test(location.protocol)) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+        }
+    </script>
+</body>
+</html>
